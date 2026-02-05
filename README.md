@@ -11,3 +11,4 @@ cd Terminal-Player
 ./install.sh
 ```
 ## Usage
+### Play
