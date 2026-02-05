@@ -129,7 +129,7 @@ show_lyrics() {
     done
 
     tput cup $start_line 0
-    toilet -f small -w $TERM_WIDTH "$last"
+    figlet -f small -w=$TERM_WIDTH "$last"
 }
 
 MPV_ARGS="--no-video --cache=no --input-ipc-server=/tmp/mpvsocket"
