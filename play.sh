@@ -32,8 +32,9 @@ THUMB=$(echo "$METADATA" | jq -r '.thumbnail // empty')
 TERM_WIDTH=$(tput cols)
 COVER_WIDTH=$((TERM_WIDTH / 2))
 
+LYRICS_FILE=""
 COVER_FILE=""
-LYRICS_FILE=$(mktemp)
+LYRICS_FILE=$(mktemp /tmp/lyric.XXXXXX.lrc)
 trap 'rm -f "$COVER_FILE" "$LYRICS_FILE"; stty ixon echo; exit' INT
 
 if [ -n "$THUMB" ]; then
@@ -89,8 +90,13 @@ update_volume() {
     tput cup $((max_lines+2)) 0
 }
 
+#notify-send -u critical -t 5000 -i "$COVER_FILE.cropped.png" "Debug" "$SEARCH"
+
 PYTHON=$(command -v python||command -v python3)||exit 1
-"$PYTHON" -m syncedlyrics -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
+"$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "$SEARCH" >>/dev/null 2>/dev/null
+if [ ! -f $LYRICS_FILE ]; then
+    "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
+fi
 
 LYRIC_HEIGHT=24
 
