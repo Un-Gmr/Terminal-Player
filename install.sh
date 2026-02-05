@@ -16,17 +16,17 @@ case "$OS_NAME" in
         sudo apt update
         sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pip
         pip3 install --upgrade pip
-        pip3 install syncedlyrics
+        pip3 install syncedlyrics --break-system-packages
         ;;
     arch)
         sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pip
         pip install --upgrade pip
-        pip install syncedlyrics
+        pip install syncedlyrics --break-system-packages
         ;;
     fedora)
         sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pip
         pip3 install --upgrade pip
-        pip3 install syncedlyrics
+        pip3 install syncedlyrics --break-system-packages
         ;;
     Darwin)
         echo "macOS detected. Make sure Homebrew is installed"
