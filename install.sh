@@ -43,6 +43,7 @@ install_deps_macos() {
     pip3 install syncedlyrics --break-system-packages
     mkdir -p ~/.local/share/toilet/fonts
     curl -L https://www.figlet.org/fonts/small.flf -o ~/.local/share/toilet/fonts/small.flf
+}
 
 case "$OS" in
     ubuntu|debian) install_deps_ubuntu_debian ;;
