@@ -15,7 +15,7 @@ done
 SEARCH=$(echo "$SEARCH" | sed 's/^ *//;s/ *$//')
 
 if [ -z "$SEARCH" ]; then
-    echo "Usage: play <search terms> [-l]" >&2
+    echo "Usage: play search terms [-l]" >&2
     exit 1
 fi
 
@@ -123,7 +123,7 @@ show_lyrics() {
     done
 
     tput cup $start_line 0
-    figlet -f small -w $TERM_WIDTH "$last"
+    toilet -f small -w $TERM_WIDTH "$last"
 }
 
 MPV_ARGS="--no-video --cache=no --input-ipc-server=/tmp/mpvsocket"
