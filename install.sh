@@ -14,21 +14,18 @@ echo "Detected OS: $OS"
 install_deps_ubuntu_debian() {
     sudo apt update
     sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pipx
-    python3 -m pip install --user --upgrade pipx
     python3 -m pipx ensurepath
     pipx install syncedlyrics
 }
 
 install_deps_arch() {
     sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pipx
-    python3 -m pip install --user --upgrade pipx
     python3 -m pipx ensurepath
     pipx install syncedlyrics
 }
 
 install_deps_fedora() {
     sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pipx
-    python3 -m pip install --user --upgrade pipx
     python3 -m pipx ensurepath
     pipx install syncedlyrics 
 }
