@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Detect OS
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS=$ID
@@ -10,45 +11,50 @@ fi
 
 echo "Detected OS: $OS"
 
-echo "Installing dependencies..."
 install_deps_ubuntu_debian() {
     sudo apt update
-    sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pip
-    pip3 install --upgrade pip
-    pip3 install syncedlyrics --break-system-packages
+    sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pipx
+    python3 -m pip install --user --upgrade pipx
+    python3 -m pipx ensurepath
+    pipx install syncedlyrics
 }
 
 install_deps_arch() {
-    sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pip
-    pip install --upgrade pip
-    pip install syncedlyrics --break-system-packages
+    sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pipx
+    python3 -m pip install --user --upgrade pipx
+    python3 -m pipx ensurepath
+    pipx install syncedlyrics
 }
 
 install_deps_fedora() {
-    sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pip
-    pip3 install --upgrade pip
-    pip3 install syncedlyrics --break-system-packages
+    sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pipx
+    python3 -m pip install --user --upgrade pipx
+    python3 -m pipx ensurepath
+    pipx install syncedlyrics 
 }
 
 install_deps_macos() {
     if ! command -v brew &>/dev/null; then
-        echo "Homebrew not found Please install Homebrew first: https://brew.sh/"
+        echo "Homebrew not found. Please install: https://brew.sh/"
         exit 1
     fi
     brew update
     brew install mpv yt-dlp jq curl imagemagick figlet jp2a socat python
-    pip3 install --upgrade pip
-    pip3 install syncedlyrics
+    python3 -m pip install --user --upgrade pipx
+    python3 -m pipx ensurepath
+    pipx install syncedlyrics
 }
 
+# Run appropriate installer
 case "$OS" in
     ubuntu|debian) install_deps_ubuntu_debian ;;
-    arch) install_deps_arch ;;
+    arch|manjaro) install_deps_arch ;;
     fedora) install_deps_fedora ;;
     Darwin) install_deps_macos ;;
-    *) echo "OS not recognized. This script only supports Linux/macOS" ; exit 1 ;;
+    *) echo "OS not recognized. Only Linux/macOS supported." ; exit 1 ;;
 esac
 
+# Install local scripts
 SOURCE_PATH="$(pwd)"
 declare -A scripts=( ["play"]="play.sh" ["playlist"]="playlist.sh" )
 DEST_DIR="/usr/local/bin"
