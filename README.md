@@ -13,8 +13,10 @@ cd Terminal-Player
 ## Usage
 ### Play
 play search terms [-l]  
-The script will automaticly use the first result on youtube and play it without video
+The script will automaticly use the first result on youtube and play it without video  
+stop the song with 's'
 
 ### Playlist
 playlist filename [-l] [-s]  
-Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"
+Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
+skip song with 's' quit with 'q'
