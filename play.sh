@@ -89,7 +89,8 @@ update_volume() {
     tput cup $((max_lines+2)) 0
 }
 
-python -m syncedlyrics -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
+PYTHON=$(command -v python||command -v python3)||exit 1
+"$PYTHON" -m syncedlyrics -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
 
 LYRIC_HEIGHT=24
 
