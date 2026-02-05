@@ -13,21 +13,18 @@ echo "Detected OS: $OS"
 
 install_deps_ubuntu_debian() {
     sudo apt update
-    sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pipx
-    python3 -m pipx ensurepath
-    pipx install syncedlyrics
+    sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pip
+    pip3 install syncedlyrics --break-system-packages
 }
 
 install_deps_arch() {
-    sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pipx
-    python3 -m pipx ensurepath
-    pipx install syncedlyrics
+    sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pip
+    pip install syncedlyrics --break-system-packages
 }
 
 install_deps_fedora() {
-    sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pipx
-    python3 -m pipx ensurepath
-    pipx install syncedlyrics 
+    sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pip
+    pip3 install syncedlyrics --break-system-packages
 }
 
 install_deps_macos() {
@@ -37,9 +34,8 @@ install_deps_macos() {
     fi
     brew update
     brew install mpv yt-dlp jq curl imagemagick figlet jp2a socat python
-    python3 -m pip install --user --upgrade pipx
-    python3 -m pipx ensurepath
-    pipx install syncedlyrics
+    python3 -m pip install --user --upgrade pip
+    pip3 install syncedlyrics --break-system-packages
 }
 
 # Run appropriate installer
