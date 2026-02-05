@@ -6,7 +6,7 @@ An cli based music player
 
 ## Installation
 ```bash
-git clone https://github.com/Un-Gmr/Terminal-Player.com
+git clone https://github.com/Un-Gmr/Terminal-Player
 cd Terminal-Player
 ./install.sh
 ```
