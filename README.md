@@ -1,14 +1,11 @@
-# Project Name
-A short description of what your project does.
+# Terminal-Player
+An cli based music player
 
 ## Table of Contents
 - [Installation](#installation)
 
 ## Installation
-Step-by-step instructions on how to get your project running:
-
 ```bash
-# Example commands
-git clone https://github.com/username/project.git
-cd project
-npm install
+git clone https://github.com/Un-Gmr/Terminal-Player.com
+cd Terminal-Player
+./install.sh
