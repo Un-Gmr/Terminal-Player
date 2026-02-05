@@ -3,15 +3,15 @@ set -e
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
-    OS_NAME=$ID
+    OS=$ID
 else
-    OS_NAME=$(uname -s)
+    OS=$(uname -s)
 fi
 
-echo "Detected OS: $OS_NAME"
+echo "Detected OS: $OS"
 
 echo "Installing dependencies"
-case "$OS_NAME" in
+case "$OS" in
     ubuntu|debian)
         sudo apt update
         sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pip
