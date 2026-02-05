@@ -1,7 +1,6 @@
 # Terminal-Player
 An cli based music player
 
-## Table of Contents
 - [Installation](#installation)
 
 ## Installation
