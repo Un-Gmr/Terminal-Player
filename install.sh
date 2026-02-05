@@ -12,24 +12,18 @@ echo "Detected OS: $OS"
 
 install_deps_ubuntu_debian() {
     sudo apt update
-    sudo apt install -y mpv yt-dlp jq curl imagemagick toilet jp2a socat python3 python3-pip
+    sudo apt install -y mpv yt-dlp jq curl imagemagick figlet jp2a socat python3 python3-pip
     pip3 install syncedlyrics --break-system-packages
-    mkdir -p ~/.local/share/toilet/fonts
-    wget https://www.figlet.org/fonts/small.flf -O ~/.local/share/toilet/fonts/small.flf
 }
 
 install_deps_arch() {
-    sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick toilet jp2a socat python python-pip
+    sudo pacman -Syu --needed mpv yt-dlp jq curl imagemagick figlet jp2a socat python python-pip
     pip install syncedlyrics --break-system-packages
-    mkdir -p ~/.local/share/toilet/fonts
-    wget https://www.figlet.org/fonts/small.flf -O ~/.local/share/toilet/fonts/small.flf
 }
 
 install_deps_fedora() {
-    sudo dnf install -y mpv yt-dlp jq curl ImageMagick toilet jp2a socat python3 python3-pip
+    sudo dnf install -y mpv yt-dlp jq curl ImageMagick figlet jp2a socat python3 python3-pip
     pip3 install syncedlyrics --break-system-packages
-    mkdir -p ~/.local/share/toilet/fonts
-    wget https://www.figlet.org/fonts/small.flf -O ~/.local/share/toilet/fonts/small.flf
 }
 
 install_deps_macos() {
@@ -38,11 +32,9 @@ install_deps_macos() {
         exit 1
     fi
     brew update
-    brew install mpv yt-dlp jq curl imagemagick toilet jp2a socat python
+    brew install mpv yt-dlp jq curl imagemagick figlet jp2a socat python
     python3 -m pip install --user --upgrade pip
     pip3 install syncedlyrics --break-system-packages
-    mkdir -p ~/.local/share/toilet/fonts
-    curl -L https://www.figlet.org/fonts/small.flf -o ~/.local/share/toilet/fonts/small.flf
 }
 
 case "$OS" in
