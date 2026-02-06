@@ -2,7 +2,7 @@
 
 LOOP=false
 SEARCH=""
-LYRIC_OFFSET=1
+LYRIC_OFFSET=0.0
 
 for arg in "$@"; do
     if [ "$arg" = "-l" ]; then
@@ -32,8 +32,6 @@ THUMB=$(echo "$METADATA" | jq -r '.thumbnail // empty')
 TERM_WIDTH=$(tput cols)
 COVER_WIDTH=$((TERM_WIDTH / 2))
 
-LYRICS_FILE=""
-COVER_FILE=""
 LYRICS_FILE=$(mktemp /tmp/lyric.XXXXXX.lrc)
 trap 'rm -f "$COVER_FILE" "$LYRICS_FILE"; stty ixon echo; exit' INT
 
@@ -61,14 +59,10 @@ INFO_LINES=(
 clear
 
 max_lines=${#COVER_LINES[@]}
-if [ ${#INFO_LINES[@]} -gt $max_lines ]; then
-    max_lines=${#INFO_LINES[@]}
-fi
+[ ${#INFO_LINES[@]} -gt $max_lines ] && max_lines=${#INFO_LINES[@]}
 
 for ((i=0; i<max_lines; i++)); do
-    printf "%-${COVER_WIDTH}s  %s\n" \
-        "${COVER_LINES[i]}" \
-        "${INFO_LINES[i]}"
+    printf "%-${COVER_WIDTH}s  %s\n" "${COVER_LINES[i]}" "${INFO_LINES[i]}"
 done
 
 PERCENT_LINE=$(( ${#INFO_LINES[@]} - 2 ))
@@ -90,77 +84,79 @@ update_volume() {
     tput cup $((max_lines+2)) 0
 }
 
-#notify-send -u critical -t 5000 -i "$COVER_FILE.cropped.png" "Debug" "$SEARCH"
-
 PYTHON=$(command -v python||command -v python3)||exit 1
 "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "$SEARCH" >>/dev/null 2>/dev/null
-if [ ! -f $LYRICS_FILE ]; then
-    "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
-fi
+[ ! -s "$LYRICS_FILE" ] && "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
 
-LYRIC_HEIGHT=24
+LLYRIC_HEIGHT=24
+LAST_LYRIC=""
+LYRIC_START=$(( ${#COVER_LINES[@]} + 1 ))
 
 show_lyrics() {
-    local time="$1"
-    local mm ss cur last
-    mm=${time:3:2}
-    ss=${time:6:2}
-    cur=$((10#$mm*60 + 10#$ss + LYRIC_OFFSET))
+    local time_s="$1"
+    local cur last
+
+    cur=$(awk -v t="$time_s" -v off="$LYRIC_OFFSET" 'BEGIN { printf "%.0f", (t + off) * 1000 }')
     [ "$cur" -lt 0 ] && cur=0
 
     last=$(awk -F']' -v t="$cur" '
         {
             gsub(/^\[/,"",$1)
             split($1,ts,":")
-            cur=int(ts[1]*60 + ts[2])
+            split(ts[2],ms,".")
+            cur=int(ts[1]*60000 + ts[2]*1000)
             if(cur<=t) last=$2
         }
-        END{
-            gsub(/\n/,"",last)
-            print last
-        }
+        END{ gsub(/\n/,"",last); print last }
     ' "$LYRICS_FILE")
 
-    local start_line=$((max_lines + 1))
+    [ "$last" = "$LAST_LYRIC" ] && return
+    LAST_LYRIC="$last"
 
     for ((i=0;i<LYRIC_HEIGHT;i++)); do
-        tput cup $((start_line+i)) 0
+        tput cup $((LYRIC_START+i)) 0
         printf "%-${TERM_WIDTH}s" ""
     done
 
-    tput cup $start_line 0
+    tput cup $LYRIC_START 0
     figlet -f small -w=$TERM_WIDTH "$last"
 }
 
-MPV_ARGS="--no-video --cache=no --input-ipc-server=/tmp/mpvsocket"
+MPV_ARGS="--no-video --input-ipc-server=/tmp/mpvsocket"
 $LOOP && MPV_ARGS="$MPV_ARGS --loop"
 
 stty_orig=$(stty -g)
 
-PERCENT="0%"
+mpv $MPV_ARGS "$URL" >> /dev/null 2>/dev/null &
+
+MPV_PID=$!
+
+while kill -0 $MPV_PID 2>/dev/null; do
+    TIME_MS=$(echo '{ "command": ["get_property", "time-pos"] }' | socat - /tmp/mpvsocket 2>/dev/null | jq -r '.data // 0')
+    show_lyrics "$TIME_MS"
+
+    read -rsn1 -t 0.05 key < /dev/tty
+    if [ "$key" = $'s' ]; then 
+        pkill -P $$ mpv 2>/dev/null 
+        break
+    elif [ "$key" = "=" ] || [ "$key" = "+" ]; then
+        echo '{ "command": ["add", "volume", 5] }' | socat - /tmp/mpvsocket
+    elif [ "$key" = "-" ]; then
+        echo '{ "command": ["add", "volume", -5] }' | socat - /tmp/mpvsocket
+    elif [ "$key" = " " ]; then
+        echo '{ "command": ["cycle", "pause"] }' | socat - /tmp/mpvsocket
+    fi
+
+    sleep 0.05
+done &
+
 mpv $MPV_ARGS "$URL" 2>&1 | while IFS= read -r line; do
     if [[ "$line" == *"A:"* ]]; then
         PERCENT="${line#*A:}"
         PERCENT="${PERCENT#"${PERCENT%%[![:space:]]*}"}"
-        TIME="${PERCENT:0:8}"
         update_percent "$PERCENT"
         update_volume
-        show_lyrics "$TIME"
     fi
-
-    read -rsn1 -t 0.01 key < /dev/tty
-        if [ "$key" = $'s' ]; then 
-            pkill -P $$ mpv 2>/dev/null 
-            break
-        elif [ "$key" = $'=' ]; then
-            echo '{ "command": ["add", "volume", 5] }' | socat - /tmp/mpvsocket
-        elif [ "$key" = $'+' ]; then
-            echo '{ "command": ["add", "volume", 5] }' | socat - /tmp/mpvsocket
-        elif [ "$key" = $'-' ]; then
-            echo '{ "command": ["add", "volume", -5] }' | socat - /tmp/mpvsocket
-        elif [ "$key" = " " ]; then
-            echo '{ "command": ["cycle", "pause"] }' | socat - /tmp/mpvsocket
-        fi
 done
 
 stty "$stty_orig"
