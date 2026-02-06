@@ -7,28 +7,28 @@ An cli based music player
 ## Installation
 ### Linux / MacOs
 install git (if not already):  
-Arch linux / Manjaro
+Arch linux / Manjaro:
 ```bash
 sudo pacman -S git
 ```
-Ubuntu / Debian
+Ubuntu / Debian:
 ```bash
 sudo apt install git
 ```
-Fedora
+Fedora:
 ```bash
 sudo dnf install git
 ```
-MacOS
+MacOS:
 ```bash
 # Install homebrew (if not already):
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
 source ~/.bash_profile
-# Git
+# Install Git:
 brew install git
 ```
-Clone the repo and install
+Clone the repo and install:
 ```bash
 git clone https://github.com/Un-Gmr/Terminal-Player
 cd Terminal-Player
@@ -36,11 +36,11 @@ cd Terminal-Player
 ```
 
 ### Windows (Beta)
-Install git and git-bash
+Install git and git-bash:
 ```powershell
 winget install --id Git.Git -e --source winget
 ```
-Clone the repo and install
+Clone the repo and install:
 ```powershell
 git clone https://github.com/Un-Gmr/Terminal-Player
 cd Terminal-Player
@@ -48,13 +48,13 @@ cd Terminal-Player
 ```
 
 ## Usage
-### Play
+### Play:
 play search terms [-l]  
 -l flag: loop the song  
 The script will automaticaly use the first result on youtube and play it without video  
 stop the song with 's'
 
-### Playlist
+### Playlist:
 playlist filename [-l] [-s]  
 -l flag: loop the playlist  
 -s flag: shuffle the playlist  
