@@ -2,7 +2,7 @@
 An cli based music player
 
 - [Installation](#installation)
-- [Usage](#Usage)
+- [Usage](#usage)
 
 ## Installation
 ### Linux / MacOs
@@ -50,12 +50,13 @@ cd Terminal-Player
 ## Usage
 ### Play
 play search terms [-l]  
-The -l Flag means loop so the song loops  
+-l flag: loop the song  
 The script will automaticaly use the first result on youtube and play it without video  
 stop the song with 's'
 
 ### Playlist
 playlist filename [-l] [-s]  
-The -l Flag means loop and the -s flag means shuffle  
+-l flag: loop the playlist  
+-s flag: shuffle the playlist  
 Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
 skip song with 's' quit with 'q'
