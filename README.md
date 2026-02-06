@@ -1,5 +1,6 @@
 # Terminal-Player
 An cli based music player
+> Note: All required dependencies are installed automatically by `install.sh`.
 
 - [Installation](#installation)
 - [Usage](#usage)
