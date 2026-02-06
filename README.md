@@ -6,7 +6,7 @@ An cli based music player
 
 ## Installation
 ### Linux / MacOs
-install git(if not already):
+install git (if not already):  
 Arch linux / Manjaro
 ```bash
 sudo pacman -S git
