@@ -4,6 +4,10 @@ LOOP=false
 SEARCH=""
 LYRIC_OFFSET=0.0
 
+for dep in yt-dlp mpv jq socat jp2a figlet magick notify-send; do
+    command -v $dep >/dev/null||{ echo "Missing: $dep"; exit 1; }
+done
+
 for arg in "$@"; do
     if [ "$arg" = "-l" ]; then
         LOOP=true
@@ -33,7 +37,7 @@ TERM_WIDTH=$(tput cols)
 COVER_WIDTH=$((TERM_WIDTH / 2))
 
 LYRICS_FILE=$(mktemp /tmp/lyric.XXXXXX.lrc)
-trap 'rm -f "$COVER_FILE" "$LYRICS_FILE"; stty ixon echo; exit' INT
+trap 'stty "$stty_orig"; rm -f "$COVER_FILE" "$LYRICS_FILE" "$COVER_FILE.cropped.png"; exit' INT TERM EXIT
 
 if [ -n "$THUMB" ]; then
     COVER_FILE=$(mktemp /tmp/cover.XXXXXX.jpg)
@@ -150,15 +154,7 @@ while kill -0 $MPV_PID 2>/dev/null; do
     sleep 0.05
 done &
 
-mpv $MPV_ARGS "$URL" 2>&1 | while IFS= read -r line; do
-    if [[ "$line" == *"A:"* ]]; then
-        PERCENT="${line#*A:}"
-        PERCENT="${PERCENT#"${PERCENT%%[![:space:]]*}"}"
-        update_percent "$PERCENT"
-        update_volume
-    fi
-done
-
 stty "$stty_orig"
 [ -n "$COVER_FILE" ] && rm -f "$COVER_FILE"
 rm -f "$LYRICS_FILE"
+rm -f "$COVER_FILE.cropped.png"
