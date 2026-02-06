@@ -7,20 +7,20 @@ An cli based music player
 ## Installation
 ### Linux / MacOs
 install git(if not already):
+Arch linux / Manjaro
 ```bash
-# Arch linux / Manjaro
 sudo pacman -S git
 ```
+Ubuntu / Debian
 ```bash
-# Ubuntu / Debian
 sudo apt install git
 ```
+Fedora
 ```bash
-# Fedora
 sudo dnf install git
 ```
+MacOS
 ```bash
-# Macos
 # Install homebrew (if not already):
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.bash_profile
@@ -28,7 +28,7 @@ source ~/.bash_profile
 # Git
 brew install git
 ```
-
+Clone the repo and install
 ```bash
 git clone https://github.com/Un-Gmr/Terminal-Player
 cd Terminal-Player
@@ -36,10 +36,11 @@ cd Terminal-Player
 ```
 
 ### Windows (Beta)
+Install git and git-bash
 ```powershell
-# Install git and git-bash
 winget install --id Git.Git -e --source winget
 ```
+Clone the repo and install
 ```powershell
 git clone https://github.com/Un-Gmr/Terminal-Player
 cd Terminal-Player
