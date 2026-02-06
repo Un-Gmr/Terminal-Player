@@ -50,10 +50,12 @@ cd Terminal-Player
 ## Usage
 ### Play
 play search terms [-l]  
-The script will automaticly use the first result on youtube and play it without video  
+The -l Flag means loop so the song loops  
+The script will automaticaly use the first result on youtube and play it without video  
 stop the song with 's'
 
 ### Playlist
 playlist filename [-l] [-s]  
+The -l Flag means loop and the -s flag means shuffle  
 Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
 skip song with 's' quit with 'q'
