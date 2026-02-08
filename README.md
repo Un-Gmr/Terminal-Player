@@ -4,8 +4,8 @@ An cli based music player
 > Note: You need sudo / admin privileges to use `install.sh`
 
 - [Installation](#installation)
-- [Instalation experimental](#experimental
 - [Usage](#usage)
+- [Instalation experimental](#experimental)
 
 # Install
 ## Linux / MacOS
