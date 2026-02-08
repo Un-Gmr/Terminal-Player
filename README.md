@@ -7,14 +7,14 @@ An cli based music player
 - [Usage](#usage)
 - [Instalation experimental](#experimental)
 
-# Install
-## Linux / MacOS
+## Install
+### Linux / MacOS
 ```bash
 tar -xf Terminal-Player-v1.0.0.tar.xz
 cd Terminal-Player
 ./install.sh
 ```
-## Windows
+### Windows
 ```powershell
 Invoke-WebRequest -Uri "https://github.com/Un-Gmr/Terminal-Player/releases/download/v1.0.0/Terminal-Player-v1.0.0.zip" -OutFile "Terminal-Player-v1.0.0.zip"
 Expand-Archive Terminal-Player-v1.0.0.zip
@@ -22,22 +22,22 @@ cd Terminal-Player
 install.bat
 ```
 
-# Usage
-## Play:
+## Usage
+### Play:
 play search terms [-l]  
 -l flag: loop the song  
 The script will automaticaly use the first result on youtube and play it without video  
 stop the song with 's'
 
-## Playlist:
+### Playlist:
 playlist filename [-l] [-s]  
 -l flag: loop the playlist  
 -s flag: shuffle the playlist  
 Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
 skip song with 's' quit with 'q'
 
-# Experimental
-## Linux / MacOs
+## Experimental
+### Linux / MacOs
 install git (if not already):  
 Arch linux / Manjaro:
 ```bash
@@ -67,7 +67,7 @@ cd Terminal-Player
 ./install.sh
 ```
 
-## Windows
+### Windows
 Install git and git-bash:
 ```powershell
 winget install --id Git.Git -e --source winget
