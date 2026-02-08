@@ -36,7 +36,7 @@ playlist filename [-l] [-s]
 Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
 skip song with 's' quit with 'q'
 
-## Experimental
+## Experimental Installation
 ### Linux / MacOs
 install git (if not already):  
 Arch linux / Manjaro:
