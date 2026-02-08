@@ -4,7 +4,7 @@ LOOP=false
 SEARCH=""
 LYRIC_OFFSET=0.0
 
-for dep in yt-dlp mpv jq socat jp2a figlet magick notify-send; do
+for dep in yt-dlp mpv jq socat jp2a figlet magick; do
     command -v $dep >/dev/null||{ echo "Missing: $dep"; exit 1; }
 done
 
@@ -42,7 +42,7 @@ trap 'stty "$stty_orig"; rm -f "$COVER_FILE" "$LYRICS_FILE" "$COVER_FILE.cropped
 if [ -n "$THUMB" ]; then
     COVER_FILE=$(mktemp /tmp/cover.XXXXXX.jpg)
     curl -fsSL "$THUMB" -o "$COVER_FILE"
-    if [ -f "$COVER_FILE" ]; then
+    if [ -f "$COVER_FILE" ] && command -v notify-send >/dev/null 2>&1; then
         mapfile -t COVER_LINES < <(jp2a --colors --fill --width=$COVER_WIDTH "$COVER_FILE")
         magick "$COVER_FILE" -resize 128x128^ -gravity center -extent 128x128 "$COVER_FILE.cropped.png"
         notify-send -u critical -t 5000 -i "$COVER_FILE.cropped.png" "Terminal-Player" "Playing: $TITLE-$ARTIST"
