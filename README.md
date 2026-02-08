@@ -1,7 +1,7 @@
 # Terminal-Player
 An cli based music player
 > Note: All required dependencies are installed automatically by `install.sh`  
-> Note: You need sudo/admin privileges to use `install.sh`
+> Note: You need sudo / admin privileges to use `install.sh`
 
 - [Installation](#installation)
 - [Usage](#usage)
