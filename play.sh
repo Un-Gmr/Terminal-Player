@@ -103,7 +103,7 @@ PYTHON=$(command -v python||command -v python3)||exit 1
 "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "$SEARCH" >>/dev/null 2>/dev/null
 [ ! -s "$LYRICS_FILE" ] && "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
 
-LLYRIC_HEIGHT=100
+LYRIC_HEIGHT=24
 LAST_LYRIC=""
 LYRIC_START=$(( ${#COVER_LINES[@]} + 1 ))
 
@@ -128,13 +128,15 @@ show_lyrics() {
     [ "$last" = "$LAST_LYRIC" ] && return
     LAST_LYRIC="$last"
 
-    for ((i=1; i<LYRIC_HEIGHT; i++)); do
+    for ((i=0; i<LYRIC_HEIGHT; i++)); do
         tput cup $((LYRIC_START+i)) 0
         tput el
     done
 
     tput cup $LYRIC_START 0
-    figlet -f small -w $TERM_WIDTH "$last"
+    if [ -n "$last" ]; then
+        figlet -f small -w $TERM_WIDTH "$last"
+    fi
 }
 
 MPV_ARGS="--no-video --input-ipc-server=/tmp/mpvsocket"
@@ -152,7 +154,7 @@ mpv --no-video $MPV_ARGS "$URL" 2>&1 | while read -r line; do
     update_volume
     update_percent "$PERCENT"
 
-    read -rsn1 -t 0.05 key < /dev/tty 2>/dev/null
+    read -rsn1 -t 0.01 key < /dev/tty 2>/dev/null
     if [ "$key" = $'s' ]; then 
         pkill -P $$ mpv 2>/dev/null 
         break

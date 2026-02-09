@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ -t 0 ] && stty -ixon
+[ -t 0 ] && stty -ixon >> /dev/null
 
 filename=$1
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
