@@ -4,7 +4,7 @@ LOOP=false
 SEARCH=""
 LYRIC_OFFSET=0.0
 
-for dep in yt-dlp mpv jq socat jp2a figlet magick; do
+for dep in yt-dlp mpv jq socat jp2a figlet magick curl; do
     command -v $dep >/dev/null||{ echo "Missing: $dep"; exit 1; }
 done
 
@@ -24,7 +24,6 @@ if [ -z "$SEARCH" ]; then
 fi
 
 METADATA=$(yt-dlp "ytsearch1:$SEARCH" -q --no-warnings --no-download --print-json)
-
 URL=$(echo "$METADATA" | jq -r '.webpage_url')
 TITLE=$(echo "$METADATA" | jq -r '.title // "N/A"')
 ARTIST=$(echo "$METADATA" | jq -r '.artist // "N/A"')
@@ -37,8 +36,16 @@ TERM_WIDTH=$(tput cols)
 COVER_WIDTH=$((TERM_WIDTH / 2))
 
 LYRICS_FILE=$(mktemp /tmp/lyric.XXXXXX.lrc)
-trap 'stty "$stty_orig"; rm -f "$COVER_FILE" "$LYRICS_FILE" "$COVER_FILE.cropped.png"; exit' INT TERM EXIT
+COVER_FILE=""
 
+cleanup() {
+    stty "$stty_orig" 2>/dev/null
+    [ -n "$COVER_FILE" ] && rm -f "$COVER_FILE" "$COVER_FILE.cropped.png"
+    [ -n "$LYRICS_FILE" ] && rm -f "$LYRICS_FILE"
+}
+trap cleanup INT TERM EXIT
+
+COVER_LINES=()
 if [ -n "$THUMB" ]; then
     COVER_FILE=$(mktemp /tmp/cover.XXXXXX.jpg)
     curl -fsSL "$THUMB" -o "$COVER_FILE"
@@ -70,7 +77,7 @@ for ((i=0; i<max_lines; i++)); do
 done
 
 PERCENT_LINE=$(( ${#INFO_LINES[@]} - 2 ))
-VOLUME_LINE=$((PERCENT_LINE + 1))
+VOLUME_LINE=$((PERCENT_LINE + 1 ))
 
 update_percent() {
     local percent="$1"
@@ -92,7 +99,7 @@ PYTHON=$(command -v python||command -v python3)||exit 1
 "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "$SEARCH" >>/dev/null 2>/dev/null
 [ ! -s "$LYRICS_FILE" ] && "$PYTHON" -m syncedlyrics --synced-only -o="$LYRICS_FILE" "[$TITLE] [$ARTIST]" >>/dev/null 2>/dev/null
 
-LLYRIC_HEIGHT=24
+LLYRIC_HEIGHT=100
 LAST_LYRIC=""
 LYRIC_START=$(( ${#COVER_LINES[@]} + 1 ))
 
@@ -150,11 +157,4 @@ while kill -0 $MPV_PID 2>/dev/null; do
     elif [ "$key" = " " ]; then
         echo '{ "command": ["cycle", "pause"] }' | socat - /tmp/mpvsocket
     fi
-
-    sleep 0.05
-done &
-
-stty "$stty_orig"
-[ -n "$COVER_FILE" ] && rm -f "$COVER_FILE"
-rm -f "$LYRICS_FILE"
-rm -f "$COVER_FILE.cropped.png"
+done
