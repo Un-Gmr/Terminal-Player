@@ -150,7 +150,7 @@ while kill -0 $MPV_PID 2>/dev/null; do
     TIME_MS=$(echo '{ "command": ["get_property", "time-pos"] }' | socat - /tmp/mpvsocket 2>/dev/null | jq -r '.data // 0')
     show_lyrics "$TIME_MS"
 
-    read -rsn1 -t 0.05 key < /dev/tty
+    read -rsn1 -t 0.05 key < /dev/tty >> /dev/null
     if [ "$key" = $'s' ]; then 
         pkill -P $$ mpv 2>/dev/null 
         break
