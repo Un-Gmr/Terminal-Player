@@ -124,13 +124,13 @@ show_lyrics() {
     [ "$last" = "$LAST_LYRIC" ] && return
     LAST_LYRIC="$last"
 
-    for ((i=0;i<LYRIC_HEIGHT;i++)); do
+    for ((i=1; i<LYRIC_HEIGHT; i++)); do
         tput cup $((LYRIC_START+i)) 0
-        printf "%-${TERM_WIDTH}s" ""
+        tput el
     done
 
     tput cup $LYRIC_START 0
-    figlet -f small -w=$TERM_WIDTH "$last"
+    figlet -f small -w $TERM_WIDTH "$last"
 }
 
 MPV_ARGS="--no-video --input-ipc-server=/tmp/mpvsocket"
