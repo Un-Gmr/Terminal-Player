@@ -76,5 +76,5 @@ Clone the repo and install:
 ```powershell
 git clone https://github.com/Un-Gmr/Terminal-Player
 cd Terminal-Player
-& "C:\Program Files\Git\bin\bash.exe" install.sh
+install.bat
 ```
