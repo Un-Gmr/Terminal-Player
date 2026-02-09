@@ -142,23 +142,25 @@ $LOOP && MPV_ARGS="$MPV_ARGS --loop"
 
 stty_orig=$(stty -g)
 
-mpv $MPV_ARGS "$URL" >> /dev/null 2>/dev/null &
-
-MPV_PID=$!
-
-while kill -0 $MPV_PID 2>/dev/null; do
+mpv --no-video $MPV_ARGS "$URL" 2>&1 | while read -r line; do
+    if [[ "$line" =~ ^A: ]]; then
+        PERCENT=${line:3}
+    fi
     TIME_MS=$(echo '{ "command": ["get_property", "time-pos"] }' | socat - /tmp/mpvsocket 2>/dev/null | jq -r '.data // 0')
+    TIME_MS=${TIME_MS:-0}             
     show_lyrics "$TIME_MS"
+    update_volume
+    update_percent "$PERCENT"
 
-    read -rsn1 -t 0.05 key < /dev/tty >> /dev/null
+    read -rsn1 -t 0.05 key < /dev/tty 2>/dev/null
     if [ "$key" = $'s' ]; then 
         pkill -P $$ mpv 2>/dev/null 
         break
     elif [ "$key" = "=" ] || [ "$key" = "+" ]; then
-        echo '{ "command": ["add", "volume", 5] }' | socat - /tmp/mpvsocket
+        echo '{ "command": ["add", "volume", 5] }' | socat - /tmp/mpvsocket >> /dev/null
     elif [ "$key" = "-" ]; then
-        echo '{ "command": ["add", "volume", -5] }' | socat - /tmp/mpvsocket
+        echo '{ "command": ["add", "volume", -5] }' | socat - /tmp/mpvsocket >> /dev/null
     elif [ "$key" = " " ]; then
-        echo '{ "command": ["cycle", "pause"] }' | socat - /tmp/mpvsocket
+        echo '{ "command": ["cycle", "pause"] }' | socat - /tmp/mpvsocket >> /dev/null
     fi
 done
