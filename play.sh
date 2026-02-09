@@ -3,6 +3,7 @@
 LOOP=false
 SEARCH=""
 LYRIC_OFFSET=0.0
+NOTIFY=true
 
 for dep in yt-dlp mpv jq socat jp2a figlet magick curl; do
     command -v $dep >/dev/null||{ echo "Missing: $dep"; exit 1; }
@@ -11,11 +12,12 @@ done
 for arg in "$@"; do
     if [ "$arg" = "-l" ]; then
         LOOP=true
+    elif [ "$arg" = "-n" ]; then
+        NOTIFY=false
     else
         SEARCH="$SEARCH $arg"
     fi
 done
-
 SEARCH=$(echo "$SEARCH" | sed 's/^ *//;s/ *$//')
 
 if [ -z "$SEARCH" ]; then
@@ -49,9 +51,11 @@ COVER_LINES=()
 if [ -n "$THUMB" ]; then
     COVER_FILE=$(mktemp /tmp/cover.XXXXXX.jpg)
     curl -fsSL "$THUMB" -o "$COVER_FILE"
-    if [ -f "$COVER_FILE" ] && command -v notify-send >/dev/null 2>&1; then
-        mapfile -t COVER_LINES < <(jp2a --colors --fill --width=$COVER_WIDTH "$COVER_FILE")
-        magick "$COVER_FILE" -resize 128x128^ -gravity center -extent 128x128 "$COVER_FILE.cropped.png"
+    
+    mapfile -t COVER_LINES < <(jp2a --colors --fill --width=$COVER_WIDTH "$COVER_FILE")
+    magick "$COVER_FILE" -resize 128x128^ -gravity center -extent 128x128 "$COVER_FILE.cropped.png"
+    
+    if [ "$NOTIFY" = true ] && command -v notify-send >/dev/null 2>&1; then
         notify-send -u critical -t 5000 -i "$COVER_FILE.cropped.png" "Terminal-Player" "Playing: $TITLE-$ARTIST"
     fi
 fi

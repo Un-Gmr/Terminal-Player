@@ -9,7 +9,7 @@ mkdir -p $PLAYLIST_DIR >> /dev/zero
 filepath="$PLAYLIST_DIR/${filename}.txt"
 
 if [ $# -lt 1 ]; then
-    echo "Usage: playlist filename [-l] [-s]" >&2
+    echo "Usage: playlist filename [-l] [-s] [-n]" >&2
     echo "Playlist dir: ~/.local/share/play/playlists" >&2
     exit 1
 fi
@@ -17,6 +17,7 @@ fi
 filename=$1
 shift
 
+NOTIFY=true
 loop=false
 shuffle=false
 
@@ -24,6 +25,7 @@ for arg in "$@"; do
     case $arg in
         -l) loop=true ;;
         -s) shuffle=true ;;
+        -n) NOTIFY=false ;;
         *) echo "Unknown option: $arg" >&2; exit 1 ;;
     esac
 done
@@ -43,7 +45,12 @@ play_playlist() {
         if $quit; then
             break
         fi
-        play "$line" &
+
+        if $NOTIFY; then
+            play "$line" &
+        else
+            play "$line" -n &
+
         pid=$!
         
         while kill -0 $pid 2>/dev/null; do
