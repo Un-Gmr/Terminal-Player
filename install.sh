@@ -58,15 +58,6 @@ install_scripts_linux() {
     echo "Installation complete! You can now run 'play' and 'playlist' from anywhere"
 }
 
-@echo off
-bash "%DEST%" %*
-EOL
-    done
-
-    echo "You can now run 'play' and 'playlist' from Git Bash, CMD, or PowerShell"
-    export PATH=\"$HOME/bin:\$PATH\"
-}
-
 case "$OS" in
     ubuntu|debian) install_deps_ubuntu_debian && install_scripts_linux ;;
     arch|manjaro) install_deps_arch && install_scripts_linux ;;
