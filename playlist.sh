@@ -55,7 +55,7 @@ play_playlist() {
         pid=$!
         
         while kill -0 $pid 2>/dev/null; do
-            read -rsn1 -t 0.1 key < /dev/tty
+            read -rsn1 -t 0.1 key < /dev/tty >> /dev/null
             if [[ $key == "q" ]]; then
                 pkill mpv
                 sleep .1
