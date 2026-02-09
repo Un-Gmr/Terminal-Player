@@ -50,6 +50,7 @@ play_playlist() {
             play "$line" &
         else
             play "$line" -n &
+        fi
 
         pid=$!
         
