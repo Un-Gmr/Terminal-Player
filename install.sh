@@ -58,6 +58,7 @@ install_scripts_linux() {
     echo "Installation complete! You can now run 'play' and 'playlist' from anywhere"
 }
 
+
 case "$OS" in
     ubuntu|debian) install_deps_ubuntu_debian && install_scripts_linux ;;
     arch|manjaro) install_deps_arch && install_scripts_linux ;;

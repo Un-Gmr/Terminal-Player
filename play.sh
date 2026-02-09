@@ -42,11 +42,11 @@ trap 'stty "$stty_orig"; rm -f "$COVER_FILE" "$LYRICS_FILE" "$COVER_FILE.cropped
 if [ -n "$THUMB" ]; then
     COVER_FILE=$(mktemp /tmp/cover.XXXXXX.jpg)
     curl -fsSL "$THUMB" -o "$COVER_FILE"
-    #if [ -f "$COVER_FILE" ] && command -v notify-send >/dev/null 2>&1; then
-        #mapfile -t COVER_LINES < <(jp2a --colors --fill --width=$COVER_WIDTH "$COVER_FILE")
-        #magick "$COVER_FILE" -resize 128x128^ -gravity center -extent 128x128 "$COVER_FILE.cropped.png"
-        #notify-send -u critical -t 5000 -i "$COVER_FILE.cropped.png" "Terminal-Player" "Playing: $TITLE-$ARTIST"
-    #fi
+    if [ -f "$COVER_FILE" ] && command -v notify-send >/dev/null 2>&1; then
+        mapfile -t COVER_LINES < <(jp2a --colors --fill --width=$COVER_WIDTH "$COVER_FILE")
+        magick "$COVER_FILE" -resize 128x128^ -gravity center -extent 128x128 "$COVER_FILE.cropped.png"
+        notify-send -u critical -t 5000 -i "$COVER_FILE.cropped.png" "Terminal-Player" "Playing: $TITLE-$ARTIST"
+    fi
 fi
 
 INFO_LINES=(
