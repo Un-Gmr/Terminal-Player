@@ -64,3 +64,4 @@ playlist filename [-l] [-s] [-n]
 -n flag: suppress notification  
 Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
 skip song with 's' quit with 'q'
+
