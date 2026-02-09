@@ -51,14 +51,16 @@ cd Terminal-Player
 
 ## Usage
 ### Play:
-play search terms [-l]  
+play search terms [-l] [-n]  
 -l flag: loop the song  
+-n flag: suppress notification  
 The script will automaticaly use the first result on youtube and play it without video  
 stop the song with 's'
 
 ### Playlist:
-playlist filename [-l] [-s]  
+playlist filename [-l] [-s] [-n]  
 -l flag: loop the playlist  
 -s flag: shuffle the playlist  
+-n flag: suppress notification  
 Put files in ~/.local/share/play/playlists e.g. likes.txt and play them with "playlist likes [-l] [-s]"  
 skip song with 's' quit with 'q'
