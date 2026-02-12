@@ -61,7 +61,7 @@ install_scripts_linux() {
 
 case "$OS" in
     ubuntu|debian) install_deps_ubuntu_debian && install_scripts_linux ;;
-    arch|manjaro) install_deps_arch && install_scripts_linux ;;
+    arch|manjaro|blackarch) install_deps_arch && install_scripts_linux ;;
     fedora) install_deps_fedora && install_scripts_linux ;;
     Darwin) install_deps_macos && install_scripts_linux ;;
     *) echo "OS not recognized. Only Linux/macOS/Windows supported." ; exit 1 ;;
