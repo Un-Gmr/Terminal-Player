@@ -39,31 +39,42 @@ mapfile -t original_lines < "$filepath"
 
 quit=false
 
+if command -v play >/dev/null 2>&1; then
+    PLAY_BIN="play"
+else
+    PLAY_BIN="$(cd "$(dirname "$0")" && pwd)/play.sh"
+fi
+
 play_playlist() {
     local lines=("${@}")
-    for line in "${lines[@]}"; do
+    local idx=0
+
+    while [ "$idx" -lt "${#lines[@]}" ]; do
         if $quit; then
             break
         fi
 
+        line="${lines[$idx]}"
         if $NOTIFY; then
-            play "$line" &
+            "$PLAY_BIN" "$line"
         else
-            play "$line" -n &
+            "$PLAY_BIN" "$line" -n
         fi
 
-        pid=$!
-        
-        while kill -0 $pid 2>/dev/null; do
-            read -rsn1 -t 0.1 key < /dev/tty >> /dev/null
-            if [[ $key == "q" ]]; then
-                pkill mpv
-                sleep .1
-                kill $pid 2>/dev/null
+        rc=$?
+        case "$rc" in
+            12)
+                if [ "$idx" -gt 0 ]; then
+                    idx=$((idx - 1))
+                fi
+                ;;
+            13)
                 quit=true
-                break
-            fi
-        done
+                ;;
+            *)
+                idx=$((idx + 1))
+                ;;
+        esac
     done
 }
 

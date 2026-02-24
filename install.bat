@@ -15,19 +15,29 @@ IF ERRORLEVEL 1 (
     choco install git -y
 )
 
-choco install mpv yt-dlp jq curl imagemagick figlet python3 -y
+choco install mpv yt-dlp jq curl imagemagick figlet python3 socat -y
 
 SET PYTHON=%LOCALAPPDATA%\Programs\Python\Python39
 IF EXIST "%PYTHON%\Scripts" SET PATH=%PYTHON%\Scripts;%PATH%
 
 python -m pip install --upgrade pip
-pip install syncedlyrics
+pip install syncedlyrics dbus-next
 
 SET DEST=%USERPROFILE%\bin
 IF NOT EXIST "%DEST%" mkdir "%DEST%"
 
 COPY play.sh "%DEST%\play.sh"
 COPY playlist.sh "%DEST%\playlist.sh"
+IF EXIST "playctl.sh" (
+    COPY playctl.sh "%DEST%\playctl.sh"
+) ELSE (
+    echo WARNING: Optional file missing: playctl.sh ^(playctl command will be unavailable^)
+)
+IF EXIST "terminal_player_mpris.py" (
+    COPY terminal_player_mpris.py "%DEST%\terminal_player_mpris.py"
+) ELSE (
+    echo WARNING: Optional file missing: terminal_player_mpris.py ^(MPRIS bridge will be unavailable^)
+)
 
 FOR /F "usebackq tokens=*" %%i IN (`where bash`) DO SET BASH_PATH=%%i
 IF NOT DEFINED BASH_PATH exit /b 1
@@ -41,5 +51,23 @@ echo "%BASH_PATH%" "%%~dp0play.sh" %%*
 echo @echo off
 echo "%BASH_PATH%" "%%~dp0playlist.sh" %%*
 ) > "%DEST%\playlist.bat"
+
+IF EXIST "playctl.sh" (
+(
+echo @echo off
+echo "%BASH_PATH%" "%%~dp0playctl.sh" %%*
+) > "%DEST%\playctl.bat"
+ ) ELSE (
+echo WARNING: Skipping playctl.bat wrapper because playctl.sh is missing
+)
+
+IF EXIST "terminal_player_mpris.py" (
+(
+echo @echo off
+echo "%BASH_PATH%" "%%~dp0terminal_player_mpris.py" %%*
+) > "%DEST%\terminal-player-mpris.bat"
+ ) ELSE (
+echo WARNING: Skipping terminal-player-mpris.bat wrapper because terminal_player_mpris.py is missing
+)
 
 ENDLOCAL
