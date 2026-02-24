@@ -185,7 +185,7 @@ show_lyrics() {
     fi
 }
 
-MPV_ARGS="--no-video --input-ipc-server=$MPV_SOCKET --input-media-keys=yes"
+MPV_ARGS="--no-video --input-ipc-server=$MPV_SOCKET"
 MPV_FORCE_TITLE="${TITLE} - ${ARTIST}"
 $LOOP && MPV_ARGS="$MPV_ARGS --loop"
 
@@ -272,11 +272,11 @@ handle_control() {
             send_mpv_command '{ "command": ["set_property", "pause", false] }'
             ;;
         volup)
-            send_mpv_command '{ "command": ["add", "volume", 5] }'
+            send_mpv_command '{ "command": ["add", "volume", 2.5] }'
             update_volume
             ;;
         voldown)
-            send_mpv_command '{ "command": ["add", "volume", -5] }'
+            send_mpv_command '{ "command": ["add", "volume", -2.5] }'
             update_volume
             ;;
         mute)
@@ -313,7 +313,6 @@ while read -r line; do
         fi
     fi
 
-    # Keep volume reasonably fresh for external controls without polling each mpv line.
     if [ $((LOOP_TICK % VOLUME_REFRESH_EVERY)) -eq 0 ]; then
         update_volume
     fi
