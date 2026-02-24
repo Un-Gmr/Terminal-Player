@@ -84,8 +84,6 @@ INFO_LINES=(
     "Date:    $DATE"
     "Channel: $UPLOADER"
     "URL:     $URL"
-    "Keys:    [space]=pause  [s]=stop  [n]=next  [p]=prev  [q]=quit"
-    "         [f/b]=seek +/-10s  [m]=mute  [+/-]=volume"
     "Percent: 00:00:00 / 00:00:00 (0%)"
     "Volume:  100%"
 )
@@ -99,7 +97,7 @@ for ((i=0; i<max_lines; i++)); do
     printf "%-${COVER_WIDTH}s  %s\n" "${COVER_LINES[i]}" "${INFO_LINES[i]}"
 done
 
-PERCENT_LINE=$(( ${#INFO_LINES[@]} - 2 ))
+PERCENT_LINE=$(( ${#INFO_LINES[@]} -2 ))
 VOLUME_LINE=$((PERCENT_LINE + 1 ))
 LAST_PERCENT="00:00:00 / 00:00:00 (0%)"
 
