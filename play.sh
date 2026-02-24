@@ -149,6 +149,9 @@ PYTHON=$(command -v python||command -v python3)||exit 1
 LYRIC_HEIGHT=24
 LAST_LYRIC=""
 LYRIC_START=$(( ${#COVER_LINES[@]} + 1 ))
+LAST_LYRIC_SECOND=-1
+LOOP_TICK=0
+VOLUME_REFRESH_EVERY=50
 
 show_lyrics() {
     local time_s="$1"
@@ -270,12 +273,15 @@ handle_control() {
             ;;
         volup)
             send_mpv_command '{ "command": ["add", "volume", 5] }'
+            update_volume
             ;;
         voldown)
             send_mpv_command '{ "command": ["add", "volume", -5] }'
+            update_volume
             ;;
         mute)
             send_mpv_command '{ "command": ["cycle", "mute"] }'
+            update_volume
             ;;
         seekf)
             send_mpv_command '{ "command": ["seek", 10] }'
@@ -288,14 +294,29 @@ handle_control() {
 }
 
 while read -r line; do
+    ((LOOP_TICK++))
+
     if [[ "$line" =~ ^A: ]]; then
         PERCENT=${line:3}
         [ -n "$PERCENT" ] && update_percent "$PERCENT"
+
+        elapsed="${PERCENT%%/*}"
+        elapsed="${elapsed#"${elapsed%%[![:space:]]*}"}"
+        elapsed="${elapsed%%.*}"
+        if [[ "$elapsed" =~ ^[0-9]+:[0-9]{2}:[0-9]{2}$ ]]; then
+            IFS=':' read -r hh mm ss <<< "$elapsed"
+            current_second=$((10#$hh * 3600 + 10#$mm * 60 + 10#$ss))
+            if [ "$current_second" -ne "$LAST_LYRIC_SECOND" ]; then
+                show_lyrics "$current_second"
+                LAST_LYRIC_SECOND=$current_second
+            fi
+        fi
     fi
-    TIME_MS=$(echo '{ "command": ["get_property", "time-pos"] }' | socat - "$MPV_SOCKET" 2>/dev/null | jq -r '.data // 0')
-    TIME_MS=${TIME_MS:-0}
-    show_lyrics "$TIME_MS"
-    update_volume
+
+    # Keep volume reasonably fresh for external controls without polling each mpv line.
+    if [ $((LOOP_TICK % VOLUME_REFRESH_EVERY)) -eq 0 ]; then
+        update_volume
+    fi
 
     if cmd=$(read_command); then
         handle_control "$cmd"
@@ -305,7 +326,7 @@ while read -r line; do
         fi
     fi
 
-    read -rsn1 -t 0.01 key < /dev/tty 2>/dev/null
+    read -rsn1 -t 0.05 key < /dev/tty 2>/dev/null
     if [ "$key" = $'s' ]; then
         set_command "stop"
         handle_control "stop"

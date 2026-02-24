@@ -210,6 +210,7 @@ class Bridge:
         self.volume = 1.0
         self.position_us = 0
         self.metadata = {"mpris:trackid": Variant("o", "/com/terminal_player/track/0")}
+        self._metadata_mtime_ns = None
         self.root = MprisRoot(self)
         self.player = MprisPlayer(self)
 
@@ -249,6 +250,20 @@ class Bridge:
             md["mpris:length"] = Variant("x", length_us)
         self.metadata = md
 
+    def maybe_reload_metadata(self) -> bool:
+        try:
+            stat = self.metadata_file.stat()
+            mtime_ns = stat.st_mtime_ns
+        except Exception:
+            mtime_ns = None
+
+        if mtime_ns == self._metadata_mtime_ns:
+            return False
+
+        self._metadata_mtime_ns = mtime_ns
+        self.load_metadata()
+        return True
+
     async def send_request(self, payload: dict) -> dict:
         if not self.socket_path.exists():
             return {}
@@ -280,11 +295,22 @@ class Bridge:
 
     async def poll(self) -> None:
         self.load_metadata()
-        previous = (self.playback_status, self.volume, self.position_us)
+        try:
+            self._metadata_mtime_ns = self.metadata_file.stat().st_mtime_ns
+        except Exception:
+            self._metadata_mtime_ns = None
+
+        poll_interval = float(os.environ.get("TERMINAL_PLAYER_MPRIS_POLL_INTERVAL", "1.0"))
+        poll_interval = max(0.25, poll_interval)
+        last_position_emit_us = self.position_us
+        last_playback_status = self.playback_status
+        last_volume = self.volume
+
         while True:
             if self.stop_file.exists():
                 break
 
+            metadata_changed = self.maybe_reload_metadata()
             paused = await self.get_property("pause")
             time_pos = await self.get_property("time-pos")
             volume = await self.get_property("volume")
@@ -302,19 +328,25 @@ class Bridge:
             if isinstance(volume, (int, float)):
                 self.volume = max(0.0, min(1.0, float(volume) / 100.0))
 
-            current = (self.playback_status, self.volume, self.position_us)
-            if current != previous:
-                self.player.emit_properties_changed(
-                    {
-                        "PlaybackStatus": self.playback_status,
-                        "Volume": self.volume,
-                        "Position": self.position_us,
-                        "Metadata": self.metadata,
-                    }
-                )
-                previous = current
+            changed = {}
+            if metadata_changed:
+                changed["Metadata"] = self.metadata
+            if self.playback_status != last_playback_status:
+                changed["PlaybackStatus"] = self.playback_status
+                last_playback_status = self.playback_status
+            if self.volume != last_volume:
+                changed["Volume"] = self.volume
+                last_volume = self.volume
 
-            await asyncio.sleep(0.5)
+            # Position changes continuously while playing; only emit when it moves by >=1s.
+            if abs(self.position_us - last_position_emit_us) >= 1_000_000:
+                changed["Position"] = self.position_us
+                last_position_emit_us = self.position_us
+
+            if changed:
+                self.player.emit_properties_changed(changed)
+
+            await asyncio.sleep(poll_interval)
 
     async def run(self) -> int:
         bus = await MessageBus().connect()
