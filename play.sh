@@ -3,7 +3,6 @@
 LOOP=false
 SEARCH=""
 LYRIC_OFFSET=1.0
-NOTIFY=true
 DOWNLOAD=false
 SHOW_LYRICS=true
 FILEMODE=false
@@ -28,9 +27,9 @@ done
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  -l) SHOW_LYRICS=false ;;
+  -l | -L | --loop) LOOP=true ;;
+  -n | --no-lyrics) SHOW_LYRICS=false ;;
   -d) DOWNLOAD=true ;;
-  -n) NOTIFY=false ;;
   -f)
     FILEMODE=true
     FILEPATH="$2"

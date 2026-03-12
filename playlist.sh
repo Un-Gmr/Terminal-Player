@@ -17,7 +17,6 @@ fi
 filename=$1
 shift
 
-NOTIFY=true
 loop=false
 shuffle=false
 download=false
@@ -26,7 +25,6 @@ for arg in "$@"; do
   case $arg in
   -l) loop=true ;;
   -s) shuffle=true ;;
-  -n) NOTIFY=false ;;
   -d) download=true ;;
   *)
     echo "Unknown option: $arg" >&2
