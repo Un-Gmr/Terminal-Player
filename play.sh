@@ -91,7 +91,6 @@ if [ "$DOWNLOAD" = true ]; then
   exit 0
 fi
 
-# Stream mode (not downloading, not file/directory)
 if [ "$FILEMODE" = false ]; then
   METADATA=$(yt-dlp "ytsearch1:$SEARCH" -q --print-json --skip-download)
   URL=$(echo "$METADATA" | jq -r '.webpage_url')
@@ -150,7 +149,6 @@ rm -f "$MPV_SOCKET" "$CMD_FILE" "$REASON_FILE" "$MPRIS_STOP_FILE"
 : >"$REASON_FILE"
 : >"$MPRIS_LOG_FILE"
 
-# Load metadata and extradata
 if [ -f "$METADATA_FILE" ]; then
   TITLE=$(jq -r '.title // "'"$TITLE"'"' "$METADATA_FILE")
   ARTIST=$(jq -r '.artist // empty' "$METADATA_FILE")
@@ -170,7 +168,6 @@ fi
 TERM_WIDTH=$(tput cols)
 COVER_WIDTH=$((TERM_WIDTH / 2))
 
-# Load cover
 COVER_LINES=()
 if [ -n "$COVER" ] && [ -f "$COVER" ]; then
   mapfile -t COVER_LINES < <(jp2a --colors --fill --width=$COVER_WIDTH "$COVER")
@@ -269,7 +266,6 @@ read_command() {
 MPV_ARGS="--no-video --no-cache --input-ipc-server=$MPV_SOCKET"
 $LOOP && MPV_ARGS="$MPV_ARGS --loop"
 
-# safer elapsed parser
 parse_elapsed() {
   local elapsed="$1"
   elapsed="${elapsed%%.*}"
