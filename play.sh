@@ -215,7 +215,7 @@ update_volume() {
   vol=$(echo '{ "command": ["get_property", "volume"] }' | socat - "$MPV_SOCKET" 2>/dev/null | jq -r '.data // "N/A"')
   vol=${vol%.*}
   tput cup $VOLUME_LINE $COVER_WIDTH
-  printf "  Volume: %s%%  " "$vol"
+  printf "  Volume:  %s%%  " "$vol"
   tput cup $((max_lines + 2)) 0
 }
 
