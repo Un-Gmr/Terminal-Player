@@ -266,7 +266,7 @@ read_command() {
   : >"$CMD_FILE"
 }
 
-MPV_ARGS="--no-video --input-ipc-server=$MPV_SOCKET"
+MPV_ARGS="--no-video --no-cache --input-ipc-server=$MPV_SOCKET"
 $LOOP && MPV_ARGS="$MPV_ARGS --loop"
 
 # safer elapsed parser
@@ -342,50 +342,40 @@ while read -r line; do
   read -rsn1 -t 0.05 key </dev/tty 2>/dev/null
   case "$key" in
   s)
-    set_command "stop"
     send_mpv_command '{ "command": ["stop"] }'
     exit 10
     ;;
   n)
-    set_command "next"
     send_mpv_command '{ "command": ["stop"] }'
     exit 11
     ;;
   p)
-    set_command "prev"
     send_mpv_command '{ "command": ["stop"] }'
     exit 12
     ;;
   q)
-    set_command "quit"
     send_mpv_command '{ "command": ["stop"] }'
     exit 13
     ;;
   "=" | "+")
-    set_command "volup"
-    send_mpv_command '{ "command": ["add", "volume", 2.5] }'
+    send_mpv_command '{ "command": ["add", "volume", 5] }'
     update_volume
     ;;
   "-")
-    set_command "voldown"
-    send_mpv_command '{ "command": ["add", "volume", -2.5] }'
+    send_mpv_command '{ "command": ["add", "volume", -5] }'
     update_volume
     ;;
   " ")
-    set_command "toggle"
     send_mpv_command '{ "command": ["cycle", "pause"] }'
     ;;
   m)
-    set_command "mute"
     send_mpv_command '{ "command": ["cycle", "mute"] }'
     update_volume
     ;;
   f)
-    set_command "seekf"
     send_mpv_command '{ "command": ["seek", 10] }'
     ;;
   b)
-    set_command "seekb"
     send_mpv_command '{ "command": ["seek", -10] }'
     ;;
   esac
